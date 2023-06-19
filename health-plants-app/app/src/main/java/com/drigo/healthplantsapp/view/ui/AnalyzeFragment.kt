@@ -1,60 +1,64 @@
 package com.drigo.healthplantsapp.view.ui
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.drigo.healthplantsapp.R
+import com.drigo.healthplantsapp.databinding.FragmentAnalyzeBinding
+import com.drigo.healthplantsapp.shared.ClassifierImage
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AnalyzeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AnalyzeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private val mCameraRequestCode = 0
+    private lateinit var binding: FragmentAnalyzeBinding
+    private lateinit var mClassifier: ClassifierImage
+    private lateinit var mBitmap: Bitmap
+    private val mInputSize = 200 //224
+    private val mModelPath = "model.tflite"
+    private val mLabelPath = "labels.txt"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_analyze, container, false)
+    ): View {
+        binding = FragmentAnalyzeBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
+
+        mClassifier = ClassifierImage(resources.assets, mModelPath, mLabelPath, mInputSize)
+        binding.fbCam.setOnClickListener {
+            val callCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            startActivityForResult(callCameraIntent, mCameraRequestCode)
+        }
+
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AnalyzeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AnalyzeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(requestCode == mCameraRequestCode){
+            if(resultCode == Activity.RESULT_OK && data != null) {
+                mBitmap = data.extras!!.get("data") as Bitmap
+                mBitmap = scaleImage(mBitmap)
+                binding.mPhotoImageView.setImageBitmap(mBitmap)
+                val model_output = mClassifier.recognizeImage(scaleImage(mBitmap)).firstOrNull()
+                binding.mResultTextView.text = model_output?.title
+                binding.mResultTextView2.text = model_output?.confidence.toString()
             }
+        }
     }
+
+    private fun scaleImage(bitmap: Bitmap?): Bitmap {
+        val width = bitmap!!.width
+        val height = bitmap.height
+        val scaledWidth = mInputSize.toFloat() / width
+        val scaledHeight = mInputSize.toFloat() / height
+        val matrix = Matrix()
+        matrix.postScale(scaledWidth, scaledHeight)
+        return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true)
+    }
+
 }
