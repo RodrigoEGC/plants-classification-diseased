@@ -9,8 +9,6 @@ import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.util.*
-import kotlin.Comparator
-import kotlin.collections.ArrayList
 
 class ClassifierImage(assetManager: AssetManager, modelPath: String, labelPath: String, inputSize: Int) {
     private var INTERPRETER: Interpreter
@@ -62,7 +60,7 @@ class ClassifierImage(assetManager: AssetManager, modelPath: String, labelPath: 
         val byteBuffer = ByteBuffer.allocateDirect(4 * INPUT_SIZE * INPUT_SIZE * PIXEL_SIZE)
         byteBuffer.order(ByteOrder.nativeOrder())
         val intValues = IntArray(INPUT_SIZE * INPUT_SIZE)
-
+        byteBuffer.rewind()
         bitmap.getPixels(intValues, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
         var pixel = 0
         for (i in 0 until INPUT_SIZE) {
