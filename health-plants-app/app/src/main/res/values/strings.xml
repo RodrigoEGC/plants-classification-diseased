@@ -14,4 +14,6 @@
     <string name="view_image">View image</string>
     <string name="remidy">Remidy</string>
     <string name="cite">Cite</string>
+    <string name="logout">Logout</string>
+    <string name="star">Star</string>
 </resources>

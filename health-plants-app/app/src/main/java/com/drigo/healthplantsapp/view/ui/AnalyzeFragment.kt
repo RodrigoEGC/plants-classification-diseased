@@ -69,6 +69,8 @@ class AnalyzeFragment : Fragment() {
                 val modelOutput = mClassifier.recognizeImage(scaleImage(mBitmap)).firstOrNull()
                 binding.mResultTextView.text = modelOutput?.title
                 binding.mResultTextView2.text = modelOutput?.confidence.toString()
+                if (binding.mResultTextView.text.toString().isNotEmpty() && binding.mResultTextView2.text.toString().isNotEmpty())
+                    binding.fbInfo.visibility = View.VISIBLE
             }
         }
     }
@@ -102,7 +104,6 @@ class AnalyzeFragment : Fragment() {
             val obj= JSONObject(loadJSONFromAsset())
             val jArray= JSONArray()
             jArray.put(obj)
-            val oi = jArray
             for (i in 0 until jArray.length()){
                 val plant = jArray.getJSONObject(i)
                 val keys = plant.keys()
