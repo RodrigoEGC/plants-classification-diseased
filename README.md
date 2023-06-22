@@ -1,5 +1,5 @@
 <h1 align="center">
-📄<br>Projeto de detecção de doenças de plantas usando a técnica de Classificação de Imagens
+📄<br>Projeto de detecção de doenças de plantas usando Redes Neurais e técnicas de Classificação de Imagens
 </h1>
 
 ## 📚 Sobre
@@ -11,7 +11,7 @@
 Treinar um modelo usando imagens de conjunto de dados de treinamento para: 
 1) Classificar com precisão uma determinada imagem do conjunto de dados de teste em diferentes categorias de doentes ou uma folha saudável; 
 2) Distinguir com precisão entre muitas doenças, às vezes mais de uma em uma mesma folha; 
-3) Lidar com multo classes; 
+3) Lidar com multi classes; 
 4) Implementar uma aplicação mobile;
 
 
