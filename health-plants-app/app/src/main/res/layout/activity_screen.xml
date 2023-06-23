@@ -40,7 +40,7 @@
 
             <TextView
                 android:id="@+id/text_view_second"
-                android:layout_width="100dp"
+                android:layout_width="110dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/bangers"
                 android:text="@string/health"
